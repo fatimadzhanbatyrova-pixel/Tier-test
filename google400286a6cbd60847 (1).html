@@ -1,0 +1,249 @@
+
+<!doctype html>
+<html lang="de">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Welches Tier bist du? — Persönlichkeits-Test</title>
+  <link rel="icon" type="image/png" href="https://w7.pngwing.com/pngs/92/465/png-transparent-person-pinterest-profile-user-pinterest-ui-colored-icon.png" alt="Tier" style="width:80px;height:80px;border-radius:12px;">
+
+  <style>
+    :root{--bg:#f7f8fc;--card:#fff;--accent:#6b5ce3;--muted:#555}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,sans-serif;background:var(--bg);margin:0;padding:24px;color:#111;display:flex;align-items:center;justify-content:center;min-height:100vh}
+    .wrap{width:100%;max-width:880px}
+    header{margin-bottom:18px;text-align:center}
+    h1{font-size:28px;margin:8px 0}
+    p.lead{color:var(--muted);font-size:16px;margin:0 auto 20px;max-width:650px}
+    .card{background:var(--card);padding:24px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.06)}
+    .question{font-weight:600;margin-bottom:12px;font-size:18px}
+    .answers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+    button.opt{background:#f1f2f8;border:none;padding:12px 16px;border-radius:10px;cursor:pointer;font-size:15px;text-align:left;transition:.2s}
+    button.opt:hover{background:#e3e4fb;transform:translateY(-2px)}
+    .controls{display:flex;align-items:center;gap:10px;margin-top:10px}
+    .progress{flex:1;height:10px;background:#ecebff;border-radius:10px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#958bff);width:0%}
+    .small{font-size:13px;color:var(--muted)}
+    #resultCard{display:none;text-align:center}
+    .animal-emoji{font-size:80px;margin-bottom:12px}
+    .result-title{font-size:24px;font-weight:700;margin-bottom:10px}
+    .result-desc{color:var(--muted);font-size:16px;line-height:1.5;margin-bottom:20px}
+    .btn{background:var(--accent);color:#fff;padding:12px 18px;border:none;border-radius:10px;cursor:pointer;margin:6px}
+    .btn.secondary{background:#eef0ff;color:var(--accent)}
+    footer{text-align:center;color:#888;margin-top:18px;font-size:13px}
+  </style>
+</head>
+<body>
+  
+  <div class="wrap">
+    <header style="display:flex;flex-direction:column;align-items:center;margin-bottom:20px;">
+  <div style="
+      border:2px solid #6b5ce3;        
+      background-color:#e6e4ff;        
+      border-radius:16px;
+      padding:20px 24px;
+      max-width:700px;
+      text-align:center;
+  ">
+    <h1 style="margin:0 0 8px 0; font-size:28px;">Welches Tier bist du?</h1>
+    <p style="margin:0; color:#555; font-size:16px;">
+      Dies ist ein unterhaltsamer, aber tiefgehender Persönlichkeitstest.
+      Beantworte 12 Fragen zu deinem Verhalten und deinen Gewohnheiten, 
+      um herauszufinden, welches Tier deinen Charakter am besten beschreibt.
+    </p>
+  </div>
+</header>
+
+    
+
+    <main class="card" id="quizCard">
+      <div id="quizArea"></div>
+      <div class="controls">
+        <div class="progress"><i id="progBar"></i></div>
+        <div class="small" id="stepText">1 / 12</div>
+      </div>
+    </main>
+
+    <main class="card" id="resultCard">
+      <div class="animal-emoji" id="resultEmoji">🦊</div>
+      <div class="result-title" id="resultTitle">Du bist der Fuchs!</div>
+      <div class="result-desc" id="resultDesc"></div>
+      <button class="btn" id="shareBtn">Teilen</button>
+      <button class="btn secondary" id="tryAgainBtn">Nochmal versuchen</button>
+    </main>
+
+    <footer>
+      © 2025 Persönlichkeitsquiz – Nur zur Unterhaltung, keine wissenschaftliche Bewertung.
+    </footer>
+  </div>
+
+  <script>
+    const questions = [
+      {question:'Wie reagierst du, wenn etwas Unerwartetes passiert?',
+        answers:[
+          {text:'Ich bleibe ruhig und analysiere es.', val:'owl'},
+          {text:'Ich improvisiere und mache das Beste daraus.', val:'fox'},
+          {text:'Ich frage Freunde um Rat.', val:'dog'},
+          {text:'Ich bleibe lieber im Hintergrund.', val:'cat'}
+        ]},
+      {question:'Wie beschreiben dich deine Freunde?',
+        answers:[
+          {text:'Loyal und freundlich', val:'dog'},
+          {text:'Nachdenklich und ruhig', val:'owl'},
+          {text:'Unabhängig und kreativ', val:'cat'},
+          {text:'Mutig und spontan', val:'fox'}
+        ]},
+      {question:'Was motiviert dich am meisten?',
+        answers:[
+          {text:'Abenteuer und neue Erfahrungen', val:'fox'},
+          {text:'Sicherheit und Vertrauen', val:'dog'},
+          {text:'Ruhe und Selbstbestimmung', val:'cat'},
+          {text:'Wissen und Verständnis', val:'owl'}
+        ]},
+      {question:'Wie verbringst du ein Wochenende am liebsten?',
+        answers:[
+          {text:'Mit Freunden unterwegs', val:'dog'},
+          {text:'Etwas Neues ausprobieren', val:'fox'},
+          {text:'Allein entspannen', val:'cat'},
+          {text:'Etwas planen oder lernen', val:'owl'}
+        ]},
+      {question:'Welche dieser Aussagen trifft am ehesten auf dich zu?',
+        answers:[
+          {text:'Ich helfe gerne anderen', val:'dog'},
+          {text:'Ich denke oft über das Leben nach', val:'owl'},
+          {text:'Ich brauche viel Freiheit', val:'fox'},
+          {text:'Ich schätze meine Ruhe', val:'cat'}
+        ]},
+      {question:'Wie reagierst du auf Kritik?',
+        answers:[
+          {text:'Ich nehme sie ernst und lerne daraus', val:'owl'},
+          {text:'Ich lache darüber, wenn sie nett gemeint ist', val:'dog'},
+          {text:'Ich ignoriere sie meistens', val:'cat'},
+          {text:'Ich hinterfrage sie kritisch', val:'fox'}
+        ]},
+      {question:'Wie gehst du mit Stress um?',
+        answers:[
+          {text:'Ich bleibe ruhig und überlege rational', val:'owl'},
+          {text:'Ich lenke mich mit Spaß ab', val:'dog'},
+          {text:'Ich ziehe mich kurz zurück', val:'cat'},
+          {text:'Ich finde schnell kreative Lösungen', val:'fox'}
+        ]},
+      {question:'Was ist dir in Freundschaften am wichtigsten?',
+        answers:[
+          {text:'Ehrlichkeit und Nähe', val:'dog'},
+          {text:'Respekt und Verständnis', val:'owl'},
+          {text:'Freiheit und Raum', val:'cat'},
+          {text:'Gemeinsame Abenteuer', val:'fox'}
+        ]},
+      {question:'Wie gehst du mit Veränderungen um?',
+        answers:[
+          {text:'Ich plane sie genau', val:'owl'},
+          {text:'Ich gehe offen und spontan damit um', val:'fox'},
+          {text:'Ich brauche Zeit, um mich anzupassen', val:'cat'},
+          {text:'Ich passe mich schnell an andere an', val:'dog'}
+        ]},
+      {question:'Was ist deine größte Stärke?',
+        answers:[
+          {text:'Mut und Energie', val:'fox'},
+          {text:'Treue und Zuverlässigkeit', val:'dog'},
+          {text:'Geduld und Ruhe', val:'cat'},
+          {text:'Intelligenz und Weitsicht', val:'owl'}
+        ]},
+      {question:'Wie würdest du dich in einem Team verhalten?',
+        answers:[
+          {text:'Ich übernehme gerne die Führung', val:'fox'},
+          {text:'Ich sorge für Harmonie', val:'dog'},
+          {text:'Ich halte mich im Hintergrund', val:'cat'},
+          {text:'Ich bringe Struktur und Ordnung', val:'owl'}
+        ]},
+      {question:'Was bedeutet Erfolg für dich?',
+        answers:[
+          {text:'Etwas Neues zu schaffen', val:'fox'},
+          {text:'Anderen zu helfen', val:'dog'},
+          {text:'Inneren Frieden zu finden', val:'cat'},
+          {text:'Wissen zu erlangen', val:'owl'}
+        ]}
+    ];
+
+    const results = {
+      fox: {
+        emoji:'🦊',
+        title:'Du bist der Fuchs!',
+        desc:`Schlau, neugierig und anpassungsfähig – du liebst Herausforderungen und entdeckst ständig Neues.
+        Du bist spontan, kreativ und hast ein Talent dafür, in jeder Situation das Beste zu sehen.
+        Menschen bewundern deine Energie und deinen Humor, auch wenn du manchmal zu impulsiv sein kannst.
+        <br><br><b>Stärke:</b> Flexibilität und Mut.<br><b>Schwäche:</b> Manchmal zu ungeduldig.`
+      },
+      dog: {
+        emoji:'🐶',
+        title:'Du bist der Hund!',
+        desc:`Loyal, freundlich und herzlich – du bist jemand, auf den sich andere immer verlassen können.
+        Du gibst Menschen das Gefühl von Sicherheit und Geborgenheit, weil du ehrlich und offen bist.
+        Dein Herz ist groß, und du liebst es, anderen Freude zu bereiten.
+        <br><br><b>Stärke:</b> Empathie und Zuverlässigkeit.<br><b>Schwäche:</b> Du machst dir manchmal zu viele Sorgen um andere.`
+      },
+      cat: {
+        emoji:'🐱',
+        title:'Du bist die Katze!',
+        desc:`Unabhängig, ruhig und sensibel – du brauchst deinen eigenen Raum, um dich wohlzufühlen.
+        Du gehst deinen eigenen Weg, folgst deinem Gefühl und bleibst lieber echt als beliebt.
+        Menschen schätzen deine Gelassenheit und deinen Sinn für Ästhetik.
+        <br><br><b>Stärke:</b> Selbstbewusstsein und Ruhe.<br><b>Schwäche:</b> Du kannst manchmal distanziert wirken.`
+      },
+      owl: {
+        emoji:'🦉',
+        title:'Du bist die Eule!',
+        desc:`Weise, analytisch und geduldig – du denkst nach, bevor du handelst.
+        Du beobachtest, verstehst und erkennst Zusammenhänge, die andere übersehen.
+        Du bist oft der Ruhepol in stressigen Situationen und gibst gute Ratschläge.
+        <br><br><b>Stärke:</b> Weisheit und Rationalität.<br><b>Schwäche:</b> Du grübelst manchmal zu viel.`
+      }
+    };
+
+    let current = 0;
+    const scores = {fox:0,dog:0,cat:0,owl:0};
+
+    function renderQuestion(){
+      const q = questions[current];
+      document.getElementById('quizArea').innerHTML = `
+        <div class='question'>${q.question}</div>
+        <div class='answers'>
+          ${q.answers.map(a=>`<button class='opt' data-val='${a.val}'>${a.text}</button>`).join('')}
+        </div>`;
+      document.getElementById('stepText').textContent = `${current+1} / ${questions.length}`;
+      document.getElementById('progBar').style.width = (current/questions.length*100)+'%';
+      document.querySelectorAll('.opt').forEach(b=>{
+        b.onclick=()=>{scores[b.dataset.val]++; nextQuestion();};
+      });
+    }
+
+    function nextQuestion(){
+      current++;
+      if(current<questions.length){renderQuestion();}
+      else{showResult();}
+    }
+
+    function showResult(){
+      document.getElementById('quizCard').style.display='none';
+      document.getElementById('resultCard').style.display='block';
+      const best = Object.keys(scores).reduce((a,b)=>scores[a]>scores[b]?a:b);
+      const r = results[best];
+      document.getElementById('resultEmoji').textContent=r.emoji;
+      document.getElementById('resultTitle').textContent=r.title;
+      document.getElementById('resultDesc').innerHTML=r.desc;
+      document.getElementById('progBar').style.width='100%';
+    }
+
+    document.getElementById('tryAgainBtn').onclick=()=>{location.reload();};
+    document.getElementById('shareBtn').onclick=()=>{
+      const txt = `Ich habe den Test „Welches Tier bist du?“ gemacht — ${document.getElementById('resultTitle').textContent}`;
+      if(navigator.share){navigator.share({title:'Welches Tier bist du?',text:txt,url:location.href});}
+      else{alert('Teile dein Ergebnis: '+txt);}
+    };
+
+    renderQuestion();
+
+  </script>
+</body>
+</html>
